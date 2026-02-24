@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  zap:
+    image: OWASP/zap2docker-stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - zap-data:/zap/wrk/:rw
+    environment:
+      - ZAP_API_KEY=your_api_key_here
+      - ZAP_DISABLE_ASYNC=true
+    command: zap.sh -daemon -port 8080 -host 0.0.0.0 -config api.disablekey=true
+
+volumes:
+  zap-data:

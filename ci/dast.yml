@@ -1,0 +1,46 @@
+name: DAST (Dynamic Application Security Testing)
+on:
+  push:
+    branches:
+      - develop
+      - 'release/**'
+      - 'hotfix/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+  schedule:
+    - cron: '0 2 * * 1' # Weekly on Monday at 02:00 UTC
+
+jobs:
+  dast:
+    name: DAST Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io docker-compose
+
+      - name: Start OWASP ZAP
+        run: |
+          docker-compose -f docker/zap/docker-compose.yml up -d
+
+      - name: Wait for OWASP ZAP to be ready
+        run: |
+          echo "Waiting for OWASP ZAP to be ready..."
+          timeout 60 bash -c 'until curl -s --max-time 2 http://localhost:8080 > /dev/null; do sleep 2; done'
+          echo "OWASP ZAP is ready at http://localhost:8080"
+
+      - name: Run OWASP ZAP baseline scan
+        run: |
+          docker exec -t zap zap-baseline.py -t http://localhost:3000 -r zap-report.html
+
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: zap-report.html

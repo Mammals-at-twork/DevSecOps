@@ -1,0 +1,46 @@
+name: SAST Workflow
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  sast:
+    name: Run SAST Tools
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install SAST Tools
+        run: |
+          chmod +x ./scripts/install-sast-tools.sh
+          ./scripts/install-sast-tools.sh
+
+      - name: Run Semgrep
+        run: |
+          semgrep --config ./configs/semgrep/semgrep.yml --output semgrep-results.json
+
+      - name: Run SonarQube Analysis
+        run: |
+          sonar-scanner -Dproject.settings=./configs/sonarqube/sonar-project.properties
+
+      - name: Upload Semgrep Results
+        uses: actions/upload-artifact@v2
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
+
+      - name: Notify SAST Completion
+        run: echo "SAST analysis completed. Check the results above."

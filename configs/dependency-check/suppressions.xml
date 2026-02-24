@@ -1,0 +1,12 @@
+<security-infra/security-infra/configs/dependency-check/suppressions.xml>
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions>
+    <suppress>
+        <name>Example Suppression</name>
+        <description>This suppression is for demonstration purposes.</description>
+        <cwe>1234</cwe>
+        <file>**/example-file.js</file>
+        <version>1.0</version>
+    </suppress>
+    <!-- Add additional suppressions as needed -->
+</suppressions>
