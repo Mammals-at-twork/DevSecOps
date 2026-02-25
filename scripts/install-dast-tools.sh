@@ -3,7 +3,7 @@
 # Update package list and install prerequisites
 sudo apt-get update
 sudo apt-get install -y \
-    openjdk-11-jre \
+    openjdk-17-jre \
     maven \
     git \
     curl \
@@ -12,12 +12,13 @@ sudo apt-get install -y \
     jq
 
 # Install OWASP ZAP
-wget https://github.com/zaproxy/zap-core-libs/releases/download/ZAP_2_11_1/zap-2.11.1-linux.tar.gz
-tar -xvzf zap-2.11.1-linux.tar.gz -C /opt/
-sudo ln -s /opt/ZAP_2.11.1/zap.sh /usr/local/bin/zap
+wget https://github.com/zaproxy/zaproxy/releases/download/v2.17.0/ZAP_2_17_0_unix.sh
+chmod +x ZAP_2_17_0_unix.sh
+sudo ./ZAP_2_17_0_unix.sh -q -dir /opt/ZAP_2_17_0
+sudo ln -s /opt/ZAP_2_17_0/zap.sh /usr/local/bin/zap
 
 # Clean up
-rm zap-2.11.1-linux.tar.gz
+rm ZAP_2_17_0_unix.sh
 
 # Verify installation
 zap -version
